@@ -1,0 +1,59 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": "Does your child look at you when you call his/her name?",
+      "options": ["Always", "Usually", "Sometimes", "Rarely", "Never"]
+    },
+    {
+      "id": 2,
+      "question": "How often is it easy for you to get eye contact with your child?",
+      "options": ["Always", "Usually", "Sometimes", "Rarely", "Never"]
+    },
+    {
+      "id": 3,
+      "question": "Does your child point to indicate that she/he wants something?",
+      "options": ["Always", "Usually", "Sometimes", "Rarely", "Never"]
+    },
+    {
+      "id": 4,
+      "question": "Does your child point to share interest with you?",
+      "options": ["Always", "Usually", "Sometimes", "Rarely", "Never"]
+    },
+    {
+      "id": 5,
+      "question": "Does your child pretend?",
+      "options": ["Always", "Usually", "Sometimes", "Rarely", "Never"]
+    },
+    {
+      "id": 6,
+      "question": "If you or someone else in the family is visibly upset, does your child show signs of wanting to comfort them?",
+      "options": ["Always", "Usually", "Sometimes", "Rarely", "Never"]
+    },
+    {
+      "id": 7,
+      "question": "Does your child use simple gestures?",
+      "options": ["Always", "Usually", "Sometimes", "Rarely", "Never"]
+    },
+    {
+      "id": 8,
+      "question": "Does your child stare at nothing with no apparent purpose?",
+      "options": ["Always", "Usually", "Sometimes", "Rarely", "Never"]
+    },
+    {
+      "id": 9,
+      "question": "Does your child follow where you're looking?",
+      "options": ["Always", "Usually", "Sometimes", "Rarely", "Never"]
+    },
+    {
+      "id": 10,
+      "question": "How would you describe your child's first word as:",
+      "options": [
+        "Clear and early",
+        "Delayed but clear",
+        "Delayed and unclear",
+        "Still not speaking"
+      ]
+    }
+  ]
+}
