@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ball Clicker Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #2d2d2d;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        h1,
+        h2 {
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .game-area {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background-color: #666;
+            border: 1px solid #555;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .ball {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: orange;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .score-board {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .submit-button,
+        .play-again-button {
+            display: block;
+            margin: 0 auto;
+            padding: 10px 20px;
+            background-color: orange;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .submit-button:disabled,
+        .play-again-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .score-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .score-table th,
+        .score-table td {
+            border: 1px solid #555;
+            padding: 8px;
+            text-align: center;
+            color: #e0e0e0;
+        }
+
+        .score-table th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .score-table tr:nth-child(even) {
+            background-color: #3c3c3c;
+        }
+
+        .text-success {
+            color: #4caf50;
+        }
+
+        .text-danger {
+            color: #f44336;
+        }
+
+        .clear-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 5px 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Ball Clicker Test</h1>
+        <div id="game-area" class="game-area"></div>
+        <div class="score-board">
+            <p>Score: <span id="score">0</span></p>
+            <p>Misses: <span id="misses">0</span></p>
+            <button class="submit-button" id="submit-button" style="display: none;" disabled>Submit Result</button>
+            <button class="play-again-button" id="play-again-button" style="display: none;">Play Again</button>
+        </div>
+        <div id="score-section">
+            <h2>Score</h2>
+            <button onclick="clearLocalStorage()" class="clear-btn">Clear Previous Data</button>
+            <table class="score-table" id="score-table">
+                <thead>
+                    <tr>
+                        <th>Trails</th>
+                        <th>Total</th>
+                        <th>Hits</th>
+                        <th>Miss</th>
+                        <th>Accuracy</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="score-table-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let score = 0;
+        let misses = 0;
+        let objectVisible = false;
+        let gameOver = false;
+        let postData = JSON.parse(localStorage.getItem("ball_clicker_game_data")) || {};
+
+        const gameArea = document.getElementById("game-area");
+        const scoreDisplay = document.getElementById("score");
+        const missesDisplay = document.getElementById("misses");
+        const submitButton = document.getElementById("submit-button");
+        const playAgainButton = document.getElementById("play-again-button");
+        const scoreTableBody = document.getElementById("score-table-body");
+
+        function clearLocalStorage() {
+            localStorage.removeItem("ball_clicker_game_data");
+            postData = {};
+            displayScores();
+            initGame();
+        }
+
+        function initGame() {
+            score = 0;
+            misses = 0;
+            objectVisible = false;
+            gameOver = false;
+            scoreDisplay.textContent = score;
+            missesDisplay.textContent = misses;
+            submitButton.style.display = "none";
+            submitButton.disabled = true;
+            playAgainButton.style.display = "none";
+            spawnBall();
+            startGame();
+            displayScores();
+        }
+
+        function spawnBall() {
+            if (!objectVisible && !gameOver) {
+                const x = Math.floor(Math.random() * (gameArea.clientWidth - 50));
+                const y = Math.floor(Math.random() * (gameArea.clientHeight - 50));
+                gameArea.innerHTML = `<div class="ball" style="left: ${x}px; top: ${y}px;" onclick="handleGameClick(event)"></div>`;
+                objectVisible = true;
+            }
+        }
+
+        function handleGameClick(event) {
+            event.stopPropagation();
+            if (objectVisible) {
+                score++;
+                scoreDisplay.textContent = score;
+                objectVisible = false;
+                gameArea.innerHTML = "";
+                checkGameOver();
+                spawnBall();
+            }
+        }
+
+        function handleMiss() {
+            if (objectVisible) {
+                misses++;
+                missesDisplay.textContent = misses;
+                objectVisible = false;
+                gameArea.innerHTML = "";
+                checkGameOver();
+                spawnBall();
+            }
+        }
+
+        function checkGameOver() {
+            if (score + misses >= 10) {
+                gameOver = true;
+                gameArea.innerHTML = "<h2 style='text-align: center; color: white; margin-top: 150px;'>Game Over</h2>";
+                submitButton.style.display = "block";
+                submitButton.disabled = false;
+            }
+        }
+
+        function startGame() {
+            gameArea.addEventListener("click", handleMiss);
+        }
+
+        function submitResult() {
+            const trailNumber = Object.keys(postData).length + 1;
+            postData[`trail${trailNumber}`] = {
+                score: score,
+                miss: misses,
+                total: 10,
+                accuracy: (score / 10) * 100,
+                status: score > 5 ? 1 : 0
+            };
+            localStorage.setItem("ball_clicker_game_data", JSON.stringify(postData));
+            submitButton.style.display = "none";
+            playAgainButton.style.display = "block";
+            displayScores();
+        }
+
+        function displayScores() {
+            if (postData && Object.keys(postData).length > 0) {
+                scoreTableBody.innerHTML = Object.entries(postData).map(([key, value], index) => `
+                    <tr>
+                        <td>Trail ${index + 1}</td>
+                        <td>${value.total}</td>
+                        <td>${value.score}</td>
+                        <td>${value.miss}</td>
+                        <td>${typeof value.accuracy === 'number' ? value.accuracy.toFixed(2) : 0}%</td>
+                        <td>${value.status === 1 ? '<span class="text-success">Non Autistic</span>' : '<span class="text-danger">Autistic</span>'}</td>
+                    </tr>
+                `).join("");
+            } else {
+                scoreTableBody.innerHTML = '<tr><td colspan="6">To View Score Play the Game</td></tr>';
+            }
+        }
+
+        function playAgain() {
+            initGame();
+        }
+
+        submitButton.addEventListener("click", submitResult);
+        playAgainButton.addEventListener("click", playAgain);
+        initGame();
+    </script>
+</body>
+
+</html>

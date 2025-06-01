@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Recognition Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #2d2d2d;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        h1,
+        h2 {
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .emoji-list {
+            display: block;
+            margin: 0 auto;
+            width: 150px;
+            height: 150px;
+        }
+
+        .option-container {
+            margin: 20px 0;
+        }
+
+        .list-option {
+            list-style: none;
+            padding: 0;
+        }
+
+        .list-group-item {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #3c3c3c;
+            color: #e0e0e0;
+        }
+
+        .list-group-item:hover {
+            background-color: #4a4a4a;
+        }
+
+        .list-group-item.checked {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .next-button {
+            display: block;
+            margin: 0 auto;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .next-button:hover {
+            background-color: #0056b3;
+        }
+
+        .result {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .score-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .score-table th,
+        .score-table td {
+            border: 1px solid #555;
+            padding: 8px;
+            text-align: center;
+            color: #e0e0e0;
+        }
+
+        .score-table th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .score-table tr:nth-child(even) {
+            background-color: #3c3c3c;
+        }
+
+        .text-success {
+            color: #4caf50;
+        }
+
+        .text-danger {
+            color: #f44336;
+        }
+
+        .clear-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 5px 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Emoji Recognition Test</h1>
+        <div id="game-content"></div>
+        <div id="score-section">
+            <h2>Score</h2>
+            <button onclick="clearLocalStorage()" class="clear-btn">Clear Previous Data</button>
+            <table class="score-table" id="score-table">
+                <thead>
+                    <tr>
+                        <th>Trails</th>
+                        <th>Total Score</th>
+                        <th>Your Score</th>
+                        <th>Accuracy</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="score-table-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const imageLinkPath = "https://github.com/0xAriseAizen-404/ASD-Detection-app/blob/main/app/static/";
+        const emojiData = [
+            { emotion: "Happy", image: imageLinkPath + "happy.png?raw=true", options: ["Laughing", "Sleepy", "Happy", "Shocked"], answer: 2 },
+            { emotion: "Scared", image: imageLinkPath + "scared.png?raw=true", options: ["Happy", "Scared", "Sleepy", "Laughing"], answer: 1 },
+            { emotion: "Shocked", image: imageLinkPath + "shocked.png?raw=true", options: ["Shocked", "Happy", "Thinking", "Laughing"], answer: 0 },
+            { emotion: "Angry", image: imageLinkPath + "angry.png?raw=true", options: ["Thinking", "Scared", "Sleepy", "Angry"], answer: 3 },
+            { emotion: "Crying", image: imageLinkPath + "crying.png?raw=true", options: ["Angry", "Laughing", "Shocked", "Crying"], answer: 3 },
+            { emotion: "Laughing", image: imageLinkPath + "laughing.png?raw=true", options: ["Sleepy", "Laughing", "Crying", "Scared"], answer: 1 },
+            { emotion: "Sleepy", image: imageLinkPath + "sleepy.png?raw=true", options: ["Crying", "Happy", "Sleepy", "Laughing"], answer: 2 },
+            { emotion: "Thinking", image: imageLinkPath + "thinking.png?raw=true", options: ["Shocked", "Angry", "Thinking", "Happy"], answer: 2 }
+        ];
+
+
+
+        let currentImage = 0;
+        let score = 0;
+        let clickedOption = 0;
+        let showResult = false;
+        let postData = JSON.parse(localStorage.getItem("emoji_game_data")) || {};
+
+        const gameContent = document.getElementById("game-content");
+        const scoreSection = document.getElementById("score-section");
+        const scoreTableBody = document.getElementById("score-table-body");
+
+        function clearLocalStorage() {
+            localStorage.removeItem("emoji_game_data");
+            postData = {};
+            displayScores();
+            renderGame();
+        }
+
+        function renderGame() {
+            if (showResult) {
+                gameContent.innerHTML = `
+                    <div class="result">
+                        <h2>Game Over!</h2>
+                        <p>You scored ${score} out of ${emojiData.length}</p>
+                        <button class="next-button" onclick="resetGame()">Play Again</button>
+                    </div>
+                `;
+                submitResult();
+            } else {
+                const current = emojiData[currentImage];
+                let optionsHtml = current.options.map((option, i) => `
+                    <li class="list-group-item ${clickedOption === i + 1 ? 'checked' : ''}" onclick="selectOption(${i + 1})">${option}</li>
+                `).join("");
+                gameContent.innerHTML = `
+                    <p class="card-text question">
+                        <img class="emoji-list" src="${current.image}" alt="${current.emotion}"/>
+                    </p>
+                    <div class="option-container">
+                        <ul class="list-option">${optionsHtml}</ul>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button class="next-button" onclick="nextQuestion()">Next</button>
+                    </div>
+                `;
+            }
+        }
+
+        function selectOption(option) {
+            clickedOption = option;
+            renderGame();
+        }
+
+        function nextQuestion() {
+            if (clickedOption === emojiData[currentImage].answer + 1) {
+                score++;
+            }
+            if (currentImage < emojiData.length - 1) {
+                currentImage++;
+                clickedOption = 0;
+            } else {
+                showResult = true;
+            }
+            renderGame();
+        }
+
+        function resetGame() {
+            currentImage = 0;
+            score = 0;
+            clickedOption = 0;
+            showResult = false;
+            renderGame();
+        }
+
+        function submitResult() {
+            const trailNumber = Object.keys(postData).length + 1;
+            postData[`trail${trailNumber}`] = {
+                score: score,
+                total: emojiData.length,
+                accuracy: (score / emojiData.length) * 100,
+                status: score > 5 ? 1 : 0
+            };
+            localStorage.setItem("emoji_game_data", JSON.stringify(postData));
+            displayScores();
+        }
+
+        function displayScores() {
+            if (postData && Object.keys(postData).length > 0) {
+                scoreTableBody.innerHTML = Object.entries(postData).map(([key, value], index) => `
+                    <tr>
+                        <td>Trail ${index + 1}</td>
+                        <td>${value.total}</td>
+                        <td>${value.score}</td>
+                        <td>${typeof value.accuracy === 'number' ? value.accuracy.toFixed(2) : 0}%</td>
+                        <td>${value.status === 1 ? '<span class="text-success">Non Autistic</span>' : '<span class="text-danger">Autistic</span>'}</td>
+                    </tr>
+                `).join("");
+            } else {
+                scoreTableBody.innerHTML = '<tr><td colspan="5">To View Score Play the Game</td></tr>';
+            }
+        }
+
+        displayScores();
+        renderGame();
+    </script>
+</body>
+
+</html>
