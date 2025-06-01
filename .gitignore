@@ -1,0 +1,8 @@
+data/archive
+data/test
+data/train
+data/valid
+venv
+models/resnet50_imagenet_adam.h5
+models/resnet50.h5
+.env
