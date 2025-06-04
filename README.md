@@ -250,12 +250,14 @@ Clone the repository (if hosted on GitHub) or copy the project folder to your lo
 
 1. Navigate to the project directory:
    ```
-   cd ASD-Detection-App/app
+   cd ASD-Detection-App
    ```
 2. Create a virtual environment:
    ```
-   python -m venv venv
+   python3.10 -m venv venv
    ```
+   as tensorflow not compatable with new versions of python above 3.10.
+   
 3. Activate the virtual environment:
    - On Windows:
      ```
@@ -323,7 +325,7 @@ pip install numpy streamlit pandas librosa joblib tensorflow scikit-learn google
 2. **Run the Streamlit App:**
 
    ```
-   streamlit run app/main.py
+   streamlit run main.py
    ```
 
 3. **Access the App:**
