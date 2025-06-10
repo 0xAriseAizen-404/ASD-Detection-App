@@ -2,7 +2,7 @@
 
 ## Abstract
 
-Early detection of Autism Spectrum Disorder (ASD) is crucial for effective intervention, yet traditional diagnostic methods often suffer from inconsistencies and delays due to subjective assessments. This project proposes a multimodal approach to enhance accuracy by integrating behavioral screening, audio analysis, and image processing. Behavioral assessments utilize the XGBoost algorithm and an LSTM-based sequential neural network (LSTM_ASD_model) for quiz-based evaluation. Audio recordings are analyzed with Artificial Neural Networks (ANN) combined with Long Short-Term Memory (LSTM) models, including a custom autism_model, to identify distinct vocal characteristics. Image-based detection applies deep learning through the ResNet50 + LSTM model to recognize facial patterns associated with ASD. The proposed system offers a scalable, objective, and efficient solution, assisting healthcare professionals in timely and reliable ASD detection.
+Early detection of Autism Spectrum Disorder (ASD) is crucial for effective intervention, yet traditional diagnostic methods often suffer from inconsistencies and delays due to subjective assessments. This project proposes a multimodal approach to enhance accuracy by integrating behavioral screening, audio analysis, and image processing. Behavioral assessments utilize the XGBoost algorithm and an sequential neural network for quiz-based evaluation. Audio recordings are analyzed with Artificial Neural Networks (ANN), including a custom autism_model, to identify distinct vocal characteristics. Image-based detection applies deep learning through the ResNet50 model to recognize facial patterns associated with ASD. The proposed system offers a scalable, objective, and efficient solution, assisting healthcare professionals in timely and reliable ASD detection.
 
 ---
 
@@ -14,7 +14,7 @@ The **ASD-Detection-App** is a web-based application built using Streamlit to as
 - **Quiz Test:** A quiz to assess user responses related to ASD traits using XGBoost model.
 - **Gaming Tests:** Three interactive games (Emoji Game, Memory Game, Ball Clicker Game) to evaluate user behavior.
 - **Audio Analysis:** Uses audio data to predict ASD traits with pre-trained models (ANN Model).
-- **Image Analysis:** Uses image data to predict ASD traits with deep learning models (ResNet50 + LSTM).
+- **Image Analysis:** Uses image data to predict ASD traits with deep learning models (ResNet50).
 
 The app is designed to provide a user-friendly interface for parents, caregivers, or professionals to explore potential ASD indicators through multiple modalities.
 
@@ -45,10 +45,9 @@ ASD-Detection-App/
    ├── features/               # Extracted audio features (MFCC) as .npy files
    ├── models/                 # Pre-trained models
    │   ├── ann.pkl             # Artificial Neural Network model for audio analysis
-   │   ├── autism_model.h5     # RNN + LSTM model for audio analysis
-   │   ├── lstm_asd_model.h5   # Sequential LSTM model for quiz analysis
+   │   ├── autism_model.h5     # ANN model for audio analysis
    │   ├── nb.pkl              # Naive Bayes model (not used in current implementation)
-   │   ├── resnet50.h5         # ResNet50 + LSTM model for image analysis
+   │   ├── resnet50.h5         # ResNet50 model for image analysis
    │   ├── rf.pkl              # Random Forest model for audio analysis
    │   ├── svm.pkl             # Support Vector Machine model (not used in current implementation)
    │   ├── vgg16.h5            # VGG16 model for image analysis
@@ -94,8 +93,8 @@ ASD-Detection-App/
 
 - **File:** `quiz.py`
 - **Description:** A questionnaire designed to assess potential ASD traits through user responses.
-- **Implementation:** Built using Streamlit, presenting a series of questions with multiple-choice answers. Uses XGBoost (`xgb_model.pkl`) and a Sequential LSTM model (`lstm_asd_model.h5`) for prediction.
-- **Functionality:** Users answer questions, and the app evaluates responses using the XGBoost and LSTM models to provide a summary or score indicating potential ASD traits.
+- **Implementation:** Built using Streamlit, presenting a series of questions with multiple-choice answers. Uses XGBoost (`xgb_model.pkl`).
+- **Functionality:** Users answer questions, and the app evaluates responses using the XGBoost to provide a summary or score indicating potential ASD traits.
 
 ### 3. Gaming Tests
 
@@ -127,7 +126,7 @@ ASD-Detection-App/
 - **File:** `image_analysis.py`
 - **Description:** Analyzes images to predict ASD traits using deep learning models.
 - **Models:**
-  - **ResNet50 + LSTM (autism_model.h5):** A pre-trained ResNet50 model combined with LSTM for sequential image analysis.
+  - **ResNet50 (autism_model.h5):** A pre-trained ResNet50 model for image analysis.
 - **Dataset:** Images are stored in the `data` folder, split into `train`, `test`, and `valid` subfolders, each containing `Autistic` and `Non_Autistic` subfolders with `.jpg`, `.png`, or `.jpeg` images.
 - **Implementation:**
   - Uses `tensorflow` to load and predict with the deep learning models.
@@ -172,7 +171,6 @@ ASD-Detection-App/
 - **Location:** `app/models/`
 - **Files:**
   - `xgb_model.pkl`: XGBoost model for behavioral assessment through quiz responses.
-  - `lstm_asd_model.h5`: Sequential LSTM model for quiz analysis.
 
 ### Audio Analysis Models
 
@@ -186,8 +184,8 @@ ASD-Detection-App/
 
 - **Location:** `app/models/`
 - **Files:**
-  - `autism_model.h5`: ResNet50 + LSTM model, fine-tuned on the image dataset for sequential image analysis.
-- **Training:** They were fine-tuned on the image dataset using transfer learning with TensorFlow/Keras. ResNet50 and LSTM were initially pre-trained on ImageNet, then fine-tuned for binary classification (Autistic vs. Non_Autistic).
+  - `autism_model.h5`: ResNet50 model, fine-tuned on the image dataset for image analysis.
+- **Training:** They were fine-tuned on the image dataset using transfer learning with TensorFlow/Keras. ResNet50 was initially pre-trained on ImageNet, then fine-tuned for binary classification (Autistic vs. Non_Autistic).
 
 ---
 
@@ -197,7 +195,6 @@ ASD-Detection-App/
 
 - **Models:**
   - **XGBoost (xgb_model.pkl):** A gradient boosting algorithm for behavioral assessment (`scikit-learn`).
-  - **Sequential LSTM (lstm_asd_model.h5):** A sequential neural network for analyzing quiz responses (`tensorflow`).
 - **Prediction:** Models predict potential ASD traits based on user responses.
 
 ### Audio Analysis
@@ -212,7 +209,7 @@ ASD-Detection-App/
 
 - **Feature Extraction:** Images are preprocessed (resized to 224x224, converted to RGB, normalized) using `tensorflow.keras.applications` preprocessing functions.
 - **Models:**
-  - **ResNet50 + LSTM (autism_model.h5):** A deep residual network with 50 layers combined with LSTM for sequential analysis, fine-tuned for binary classification.
+  - **ResNet50 (autism_model.h5):** A deep residual network with 50 layers for image analysis, fine-tuned for binary classification.
 - **Prediction:** Models predict "Autistic" or "Non_Autistic" based on image features, outputting probabilities for each class.
 
 ### Other Algorithms
@@ -344,7 +341,7 @@ pip install numpy streamlit pandas librosa joblib tensorflow scikit-learn google
 ### Quiz Test
 
 - Navigate to the "Quiz Test" page.
-- Answer the questions to receive a summary or score based on XGBoost and LSTM predictions.
+- Answer the questions to receive a summary or score based on XGBoost predictions.
 
 ### Gaming Tests
 
@@ -362,7 +359,7 @@ pip install numpy streamlit pandas librosa joblib tensorflow scikit-learn google
 
 - Navigate to the "Image Analysis" page.
 - Upload an image (`.jpg`, `.png`, `.jpeg`).
-- The app will display the prediction ("Autistic" or "Non Autistic") using the ResNet50 + LSTM model.
+- The app will display the prediction ("Autistic" or "Non Autistic") using the ResNet50 model.
 
 ---
 
